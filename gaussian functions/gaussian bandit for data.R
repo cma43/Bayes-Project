@@ -25,7 +25,7 @@ j <- sample(which(theta.hat ==max(theta.hat)),1)
 
 #update everything about posterior
 n[j] = n[j]+1
-rewards[j,n[j]] <- obs.reward
+rewards[n[j],j] <- obs.reward
 xbar[j] <- mean(rewards[,j], na.rm=TRUE)
 s[j] <- sd(rewards[,j],na.rm=TRUE)
 }

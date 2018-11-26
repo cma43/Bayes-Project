@@ -39,7 +39,7 @@ gaussian_bandit <- function(alpha,t,mu,cov){
     n[j] = n[j]+1
     
     # updating posterior stuff
-    rewards[j,n[j]] <- obs.reward
+    rewards[n[j],j] <- obs.reward
     xbar[j] <- mean(rewards[,j], na.rm=TRUE)
     s[j] <- sd(rewards[,j],na.rm=TRUE)
     regret[i+1] <- regret[i] + max.reward-obs.reward
