@@ -6,7 +6,7 @@
 # cov is a covariance matrix for the sampling distribution
 
 library(MASS)
-gaussian_bandit <- function(alpha,t,mu,cov){
+gaussian_bandit2 <- function(alpha,t,mu,cov){
   k <- length(mu)  
   # initializing n since prior is improper
   n <- max( c(2,2-ceiling(2*alpha)))
@@ -21,7 +21,7 @@ gaussian_bandit <- function(alpha,t,mu,cov){
   xbar <- apply(rewards, MARGIN=2,mean,na.rm=TRUE)
   s <- apply(rewards,MARGIN=2,sd,na.rm=TRUE)
   add = 0
-  add.j = 0
+  j.add = 0
   r = c(0)
   for(i in 1:t){
     
@@ -29,11 +29,12 @@ gaussian_bandit <- function(alpha,t,mu,cov){
     theta.hat <- sapply(1:k, function(l) rt(1, df=n[l]+2*alpha-1)
                         *sqrt(s[l]/(n[l]*(n[l]+2*alpha-1)))+xbar[l] )
     
-    theta.hat
     # finding best arm and randomly breaking ties
     j <- which.max(theta.hat)
     # all theoretical rewards
-    obs.rewards <- mvrnorm(1,mu, diag(cov))
+    obs.rewards <- mvrnorm(1,mu,diag(cov))
+    obs.rewards[j] <- obs.rewards[j]+ add*(j.add==j)
+    
     # Use observed maximum instead of expected maximum to avoid computation error
     max.reward <- max(obs.rewards)
     # actual observed reward for best arm at time t
@@ -46,10 +47,13 @@ gaussian_bandit <- function(alpha,t,mu,cov){
     xbar[j] <- mean(rewards[,j], na.rm=TRUE)
     s[j] <- sd(rewards[,j],na.rm=TRUE)
     regret[i+1] <- regret[i] + max.reward-obs.reward
+    add <- rbeta(1,1/2,1/2)
+    j.add = j
+    
     r[i] = obs.reward
   }
   return(rewards)
-    #return(regret[-1])
+  #return(sum(r))
 }
 
 
